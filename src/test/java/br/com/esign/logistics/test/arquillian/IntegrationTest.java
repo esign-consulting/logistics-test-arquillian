@@ -23,25 +23,43 @@
  */
 package br.com.esign.logistics.test.arquillian;
 
+import br.com.esign.logistics.core.Place;
+import br.com.esign.logistics.core.Route;
+import br.com.esign.logistics.core.RoutesMap;
+import br.com.esign.logistics.core.impl.ChosenRoute;
 import br.com.esign.logistics.ejb.RoutesMapEJB;
 import java.io.File;
-import javax.inject.Inject;
+import java.util.List;
+import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 /**
  *
  * @author gustavomunizdocarmo
  */
 @RunWith(Arquillian.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IntegrationTest {
+    
+    private static RoutesMap MAP = new RoutesMap("Arquillian IntegrationTest");
+    
+    private final Place PLACEA = new Place("A");
+    private final Place PLACEB = new Place("B");
+    private final Place PLACEC = new Place("C");
+    private final Place PLACED = new Place("D");
+    private final Route ROUTE1 = new Route(PLACEA, PLACEB, 10);
+    private final Route ROUTE2 = new Route(PLACEB, PLACED, 15);
+    private final Route ROUTE3 = new Route(PLACEA, PLACEC, 20);
     
     @Deployment
     public static WebArchive createDeployment() {
@@ -51,16 +69,84 @@ public class IntegrationTest {
             .addAsLibraries(files)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-   
-    @Inject
+    
+    @EJB
     private RoutesMapEJB ejb;
- 
+    
     /**
-     * Test of listRoutesMaps method, of class RoutesMapEJBImpl.
+     * Creates a map.
      */
     @Test
-    public void testListRoutesMaps() {
-        assertNotNull(ejb.listRoutesMaps());
+    public void testA() {
+        RoutesMap map = ejb.createRoutesMap(MAP);
+        assertNotNull(map);
+        assertNotNull(map.getSlug());
+        assertEquals(MAP, map);
+    }
+    
+    /**
+     * Checks map existence.
+     */
+    @Test
+    public void testB() {
+        List<RoutesMap> list = ejb.listRoutesMaps();
+        assertNotNull(list);
+        assertTrue(list.contains(MAP));
+    }
+    
+    /**
+     * Creates routes for the map.
+     */
+    @Test
+    public void testC() {
+        Route[] routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE1);
+        assertNotNull(routes);
+        assertEquals(2, routes.length);
+        assertArrayEquals(new Route[] {ROUTE1, ROUTE1.opposite()}, routes);
+        
+        routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE2);
+        assertNotNull(routes);
+        assertEquals(2, routes.length);
+        assertArrayEquals(new Route[] {ROUTE2, ROUTE2.opposite()}, routes);
+        
+        routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE3);
+        assertNotNull(routes);
+        assertEquals(2, routes.length);
+        assertArrayEquals(new Route[] {ROUTE3, ROUTE3.opposite()}, routes);
+    }
+    
+    /**
+     * Removes last route.
+     */
+    @Test
+    public void testD() {
+        ejb.removeRouteFromMap(MAP.getSlug(), ROUTE3);
+        assertFalse(MAP.containsRoute(ROUTE3));
+    }
+    
+    /**
+     * Tests best route functionality.
+     */
+    @Test
+    public void testE() {
+        Route route = ejb.getBestRoute(MAP.getSlug(), PLACEA.getName(), PLACED.getName(), 10, 2.50);
+        assertNotNull(route);
+        assertEquals(6.25, ((ChosenRoute) route).getCost(), 0);
+        
+        List<Route> routes = route.getRoutes();
+        assertNotNull(routes);
+        assertEquals(2, routes.size());
+        assertArrayEquals(new Route[] {ROUTE1, ROUTE2}, routes.toArray());        
+    }
+    
+    /**
+     * Removes the map.
+     */
+    @Test
+    public void testF() {
+        String slug = MAP.getSlug();
+        ejb.removeRoutesMap(slug);
+        assertNull(ejb.getRoutesMapBySlug(slug));
     }
     
 }
