@@ -51,7 +51,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IntegrationTest {
     
-    private static RoutesMap MAP = new RoutesMap("Arquillian IntegrationTest");
+    private static final RoutesMap MAP = new RoutesMap("Arquillian IntegrationTest");
     
     private final Place PLACEA = new Place("A");
     private final Place PLACEB = new Place("B");
@@ -61,6 +61,10 @@ public class IntegrationTest {
     private final Route ROUTE2 = new Route(PLACEB, PLACED, 15);
     private final Route ROUTE3 = new Route(PLACEA, PLACEC, 20);
     
+    /**
+     * Packages the EJB module.
+     * @return The WAR to deploy
+     */
     @Deployment
     public static WebArchive createDeployment() {
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
@@ -70,6 +74,9 @@ public class IntegrationTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
     
+    /**
+     * EJB injection.
+     */
     @EJB
     private RoutesMapEJB ejb;
     
