@@ -31,6 +31,7 @@ import br.com.esign.logistics.ejb.RoutesMapEJB;
 import java.io.File;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -51,7 +52,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IntegrationTest {
     
-    private static final RoutesMap MAP = new RoutesMap("Arquillian IntegrationTest");
+    private static RoutesMap MAP = new RoutesMap("Arquillian IntegrationTest");
     
     private final Place PLACEA = new Place("A");
     private final Place PLACEB = new Place("B");
@@ -102,40 +103,75 @@ public class IntegrationTest {
     }
     
     /**
+     * Checks the unique map constraint.
+     */
+    @Test(expected = EJBException.class)
+    public void testC() {
+        ejb.createRoutesMap(MAP);
+    }
+    
+    /**
      * Creates routes for the map.
      */
     @Test
-    public void testC() {
+    public void testD() {
         Route[] routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE1);
         assertNotNull(routes);
         assertEquals(2, routes.length);
         assertArrayEquals(new Route[] {ROUTE1, ROUTE1.opposite()}, routes);
+        
+        MAP = ejb.getRoutesMapBySlug(MAP.getSlug());
+        assertNotNull(MAP);
+        assertTrue(MAP.containsRoute(ROUTE1));
+        assertTrue(MAP.containsRoute(ROUTE1.opposite()));
         
         routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE2);
         assertNotNull(routes);
         assertEquals(2, routes.length);
         assertArrayEquals(new Route[] {ROUTE2, ROUTE2.opposite()}, routes);
         
+        MAP = ejb.getRoutesMapBySlug(MAP.getSlug());
+        assertNotNull(MAP);
+        assertTrue(MAP.containsRoute(ROUTE2));
+        assertTrue(MAP.containsRoute(ROUTE2.opposite()));
+        
         routes = ejb.addRouteToMap(MAP.getSlug(), ROUTE3);
         assertNotNull(routes);
         assertEquals(2, routes.length);
         assertArrayEquals(new Route[] {ROUTE3, ROUTE3.opposite()}, routes);
+        
+        MAP = ejb.getRoutesMapBySlug(MAP.getSlug());
+        assertNotNull(MAP);
+        assertTrue(MAP.containsRoute(ROUTE3));
+        assertTrue(MAP.containsRoute(ROUTE3.opposite()));
+    }
+    
+    /**
+     * Checks the unique route constaint.
+     */
+    @Test(expected = EJBException.class)
+    public void testE() {
+        ejb.addRouteToMap(MAP.getSlug(), ROUTE3);
     }
     
     /**
      * Removes last route.
      */
     @Test
-    public void testD() {
+    public void testF() {
         ejb.removeRouteFromMap(MAP.getSlug(), ROUTE3);
+        
+        MAP = ejb.getRoutesMapBySlug(MAP.getSlug());
+        assertNotNull(MAP);
         assertFalse(MAP.containsRoute(ROUTE3));
+        assertFalse(MAP.containsRoute(ROUTE3.opposite()));
     }
     
     /**
      * Tests best route functionality.
      */
     @Test
-    public void testE() {
+    public void testG() {
         Route route = ejb.getBestRoute(MAP.getSlug(), PLACEA.getName(), PLACED.getName(), 10, 2.50);
         assertNotNull(route);
         assertEquals(6.25, ((ChosenRoute) route).getCost(), 0);
@@ -150,7 +186,7 @@ public class IntegrationTest {
      * Removes the map.
      */
     @Test
-    public void testF() {
+    public void testH() {
         String slug = MAP.getSlug();
         ejb.removeRoutesMap(slug);
         assertNull(ejb.getRoutesMapBySlug(slug));
