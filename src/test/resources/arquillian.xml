@@ -1,0 +1,15 @@
+<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <container qualifier="widlfly-remote" default="true">
+        <configuration>
+            <property name="managementAddress">esign.com.br</property>
+            <property name="managementPort">13890</property>
+            <property name="username">admin</property>
+            <property name="password">${password}</property>
+            <property name="host">esign.com.br</property>
+            <property name="port">13889</property>
+        </configuration>
+    </container>
+    
+</arquillian>
