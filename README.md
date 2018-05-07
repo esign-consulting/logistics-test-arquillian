@@ -1,6 +1,6 @@
 # logistics-test-arquillian
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build status](https://travis-ci.org/esign-consulting/logistics-test-arquillian.svg?branch=master)](https://travis-ci.org/esign-consulting/logistics-test-arquillian)
 
 Project for Integration testing the [Logistics](https://github.com/esign-consulting/logistics) application. The test is based on [Arquillian](http://arquillian.org) and is executed through [Maven](https://maven.apache.org) **(installation required)**.
 
