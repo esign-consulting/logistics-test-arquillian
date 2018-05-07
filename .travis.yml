@@ -1,0 +1,12 @@
+language: java
+install: true
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mvn test -Dpassword=$WILDFLY_PASSWORD
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
