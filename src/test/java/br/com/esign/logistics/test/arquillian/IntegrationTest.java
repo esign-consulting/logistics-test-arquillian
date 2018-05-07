@@ -28,6 +28,7 @@ import br.com.esign.logistics.core.Route;
 import br.com.esign.logistics.core.RoutesMap;
 import br.com.esign.logistics.core.impl.ChosenRoute;
 import br.com.esign.logistics.ejb.RoutesMapEJB;
+import br.com.esign.logistics.togglz.MyFeatures;
 import java.io.File;
 import java.util.List;
 import javax.ejb.EJB;
@@ -43,9 +44,11 @@ import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenRemoteRepository;
 import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenUpdatePolicy;
 import static org.junit.Assert.*;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.togglz.junit.TogglzRule;
 
 /**
  *
@@ -65,6 +68,9 @@ public class IntegrationTest {
     private final Route ROUTE2 = new Route(PLACEB, PLACED, 15);
     private final Route ROUTE3 = new Route(PLACEA, PLACEC, 20);
     
+    @Rule
+    public TogglzRule togglzRule = TogglzRule.allDisabled(MyFeatures.class);
+    
     /**
      * Packages the EJB module.
      * @return The WAR to deploy
@@ -73,11 +79,14 @@ public class IntegrationTest {
     public static WebArchive createDeployment() {
         MavenRemoteRepository repository = MavenRemoteRepositories.createRemoteRepository("esign-repo", "http://maven.esign.com.br", "default");
         repository.setUpdatePolicy(MavenUpdatePolicy.UPDATE_POLICY_NEVER);
-        File[] files = Maven.configureResolver()
+        File[] ejbFiles = Maven.configureResolver()
             .withMavenCentralRepo(false).withRemoteRepo(repository)
-            .loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
+            .resolve("br.com.esign:logistics-ejb:ejb:1.0-SNAPSHOT").withTransitivity().asFile();
+        File[] togglzFiles = Maven.resolver()
+            .resolve("org.togglz:togglz-junit:2.5.0.Final").withTransitivity().asFile();
         return ShrinkWrap.create(WebArchive.class)
-            .addAsLibraries(files)
+            .addAsLibraries(ejbFiles)
+            .addAsLibraries(togglzFiles)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
     
