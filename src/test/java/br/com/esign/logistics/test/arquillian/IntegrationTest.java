@@ -38,6 +38,9 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenRemoteRepositories;
+import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenRemoteRepository;
+import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenUpdatePolicy;
 import static org.junit.Assert.*;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -68,8 +71,11 @@ public class IntegrationTest {
      */
     @Deployment
     public static WebArchive createDeployment() {
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-            .importRuntimeDependencies().resolve().withTransitivity().asFile();
+        MavenRemoteRepository repository = MavenRemoteRepositories.createRemoteRepository("esign-repo", "http://maven.esign.com.br", "default");
+        repository.setUpdatePolicy(MavenUpdatePolicy.UPDATE_POLICY_NEVER);
+        File[] files = Maven.configureResolver()
+            .withMavenCentralRepo(false).withRemoteRepo(repository)
+            .loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
         return ShrinkWrap.create(WebArchive.class)
             .addAsLibraries(files)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
