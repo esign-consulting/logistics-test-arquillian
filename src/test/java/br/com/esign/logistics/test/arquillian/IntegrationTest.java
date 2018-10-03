@@ -77,7 +77,7 @@ public class IntegrationTest {
      */
     @Deployment
     public static WebArchive createDeployment() {
-        MavenRemoteRepository repository = MavenRemoteRepositories.createRemoteRepository("esign-repo", "http://maven.esign.com.br", "default");
+        MavenRemoteRepository repository = MavenRemoteRepositories.createRemoteRepository("ossrh", "https://oss.sonatype.org/content/groups/public", "default");
         repository.setUpdatePolicy(MavenUpdatePolicy.UPDATE_POLICY_NEVER);
         File[] ejbFiles = Maven.configureResolver()
             .withMavenCentralRepo(false).withRemoteRepo(repository)
