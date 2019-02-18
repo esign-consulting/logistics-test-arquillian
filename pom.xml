@@ -14,9 +14,9 @@
 
     <repositories>
         <repository>
-            <id>esign-repo</id>
-            <name>Esign Maven Repository</name>
-            <url>http://maven.esign.com.br</url>
+            <id>ossrh</id>
+            <name>Sonatype OSSRH (OSS Repository Hosting)</name>
+            <url>https://oss.sonatype.org</url>
         </repository>
     </repositories>
     
