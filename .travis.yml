@@ -5,7 +5,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn test -Dpassword=$WILDFLY_PASSWORD
+  - mvn test -Dhost=$LOGISTICS_HOST -Dpassword=$WILDFLY_PASSWORD
 
 cache:
   directories:
