@@ -3,12 +3,12 @@
 
     <container qualifier="widlfly-remote" default="true">
         <configuration>
-            <property name="managementAddress">${host:esign.com.br}</property>
-            <property name="managementPort">${mgmtPort:13890}</property>
+            <property name="managementAddress">${host:localhost}</property>
+            <property name="managementPort">${mgmtPort:9990}</property>
             <property name="username">${username:admin}</property>
-            <property name="password">${password}</property>
-            <property name="host">${host:esign.com.br}</property>
-            <property name="port">${port:13889}</property>
+            <property name="password">${password:Admin#70365}</property>
+            <property name="host">${host:localhost}</property>
+            <property name="port">${port:8080}</property>
         </configuration>
     </container>
     
