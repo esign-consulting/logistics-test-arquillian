@@ -15,8 +15,8 @@
     <repositories>
         <repository>
             <id>ossrh</id>
-            <name>Sonatype OSSRH (OSS Repository Hosting)</name>
-            <url>https://oss.sonatype.org</url>
+            <name>Sonatype OSSRH (OSS Repository Hosting) Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
     
