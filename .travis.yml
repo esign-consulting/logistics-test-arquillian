@@ -2,7 +2,7 @@ language: java
 install: true
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 script:
   - mvn test -Dhost=$LOGISTICS_HOST -Dport=$LOGISTICS_PORT -DmgmtPort=$WILDFLY_MGMT_PORT -Dpassword=$WILDFLY_PASSWORD
