@@ -82,8 +82,9 @@ public class IntegrationTest {
         File[] ejbFiles = Maven.configureResolver()
             .withMavenCentralRepo(false).withRemoteRepo(repository)
             .resolve("br.com.esign:logistics-ejb:ejb:1.0-SNAPSHOT").withTransitivity().asFile();
-        File[] togglzFiles = Maven.resolver()
-            .resolve("org.togglz:togglz-junit:2.5.0.Final").withTransitivity().asFile();
+        File[] togglzFiles = Maven.configureResolver()
+            .withMavenCentralRepo(false).withRemoteRepo(repository)
+            .resolve("org.togglz:togglz-junit:3.2.1").withTransitivity().asFile();
         return ShrinkWrap.create(WebArchive.class)
             .addAsLibraries(ejbFiles)
             .addAsLibraries(togglzFiles)
